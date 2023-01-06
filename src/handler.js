@@ -2,18 +2,62 @@ const books = require("./books");
 const { nanoid } = require("nanoid");
 
 //? Get all books
-const getAllBooksHandler = (request, h) => {
-  const dataToBeSent = books.map((book) => {
+const getBooksHandler = (request, h) => {
+  const { reading, finished, name } = request.query;
+  let dataToBeSent = books;
+
+  //* reading books only
+  if (reading == 1) {
+    dataToBeSent = books.filter((book) => {
+      return book.reading === true;
+    });
+  }
+
+  //* unreading books only
+  if (reading == 0) {
+    dataToBeSent = books.filter((book) => {
+      return book.reading === false;
+    });
+  }
+
+  //* finished books only
+  if (finished == 1) {
+    dataToBeSent = dataToBeSent.filter((book) => {
+      return book.finished == true;
+    });
+  }
+
+  //* unfinished books only
+  if (finished == 0) {
+    dataToBeSent = dataToBeSent.filter((book) => {
+      return book.finished == false;
+    });
+  }
+
+  //* search by name
+  if (name) {
+    dataToBeSent = dataToBeSent.filter((book) => {
+      return book.name.toLowerCase().includes(name.toLowerCase());
+    });
+  }
+
+  dataToBeSent = dataToBeSent.map((book) => {
     return {
       id: book.id,
       name: book.name,
       publisher: book.publisher,
     };
   });
+
   const response = h.response({
     status: "success",
     data: {
       books: dataToBeSent,
+    },
+    queries: {
+      reading,
+      finished,
+      name,
     },
   });
   return response;
@@ -176,7 +220,7 @@ const deleteBookByIdHandler = (request, h) => {
   const index = books.findIndex((book) => {
     return book.id == bookId;
   });
-  if(index == -1) {
+  if (index == -1) {
     const response = h.response({
       status: "fail",
       message: "Buku gagal dihapus. Id tidak ditemukan",
@@ -194,9 +238,9 @@ const deleteBookByIdHandler = (request, h) => {
 };
 
 module.exports = {
-  getAllBooksHandler,
+  getBooksHandler,
   postNewBookHandler,
   getBookDetailsByIdHandler,
   putBookByIdHandler,
-  deleteBookByIdHandler
+  deleteBookByIdHandler,
 };

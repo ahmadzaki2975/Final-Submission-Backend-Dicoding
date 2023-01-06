@@ -1,5 +1,5 @@
 const {
-  getAllBooksHandler,
+  getBooksHandler,
   postNewBookHandler,
   getBookDetailsByIdHandler,
   putBookByIdHandler,
@@ -10,7 +10,7 @@ const routes = [
   {
     method: "GET",
     path: "/books",
-    handler: getAllBooksHandler,
+    handler: getBooksHandler,
   },
   {
     method: "POST",
